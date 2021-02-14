@@ -1,0 +1,208 @@
+<ActorFrame
+    InitCommand="%function(self)
+    
+        if self:getaux()==1 then return end; self:aux(1) -- fuck it use auxvar
+        _G.melody_invalid = nil
+
+        -----------------------------------------
+        -- Jaezmien's Template
+        --
+        --  A modificion of Ky_Dash's template
+        -----------------------------------------
+
+        -- Environment Setup
+            local melody = setmetatable({},
+                {
+                    __index = _G,
+                    __call = function(self, args)
+                        setfenv(args, self)
+                        return args
+                    end
+                }
+            )
+            melody.reset = function(msg)
+                if msg then SCREENMAN:SystemMessage(msg) end
+                _G.melody_invalid = true -- Only set to true if it's before the file
+            end
+        --
+
+        setfenv(1, melody)
+        _G.melody = melody
+        _G._M = melody
+
+        -- Debugging
+            SystemMessage = function(str) return _G.SCREENMAN:SystemMessage( tostring(str) ) end
+            GOT_LUA_ERROR = false
+        --
+
+        -- ArcticFqx's Lua Loader as an addon, with some modifications
+        do
+        
+            local stitch = { 
+                _VERSION = 'Stitch 190731 dev - Jaezmien\'s Modification' 
+            }
+
+            lua_external = stitch
+
+            local gsub, lower, find, gfind = string.gsub, string.lower, string.find, string.gfind
+            local getn, loadfile, type = table.getn, loadfile, type
+            local setfenv, setmetatable = setfenv, setmetatable
+            local unpack, sub, pairs = unpack, string.sub, pairs
+
+            local folder = gsub(lower(GAMESTATE:GetCurrentSong():GetSongDir()), '/songs', '')
+            local addSongs = lower(PREFSMAN:GetPreference('AdditionalSongFolders'))
+            local addFolder = lower(PREFSMAN:GetPreference('AdditionalFolders'))
+            local add = './songs,' .. addSongs .. ',' .. gsub(addFolder, ',' ,'/songs,') .. '/songs'
+            local hit = ''
+
+            -- oh god
+            local function string_split(str, sep)
+               local sep, fields = sep or ' ', {}
+               local pattern = string.format('([^%s]+)', sep)
+               string.gsub(str, pattern, function(c) fields[#fields+1] = c end)
+               return fields
+            end
+
+            -- why
+            local function sanitize_path(path)
+                local skip = 0
+                local new_str = {}
+                local split_path = string_split( path, '/' )
+                for index = table.getn(split_path), 1, -1 do
+                    local str = split_path[ index ]
+                    if str == '..' then
+                        skip = skip + 1
+                    else
+                        if skip > 0 then skip = skip - 1 else table.insert( new_str, 1, str ) end
+                    end
+                end
+                return gsub( table.concat( new_str, '/' ), '\\', '/')
+            end
+
+            local function weak_clone(orig)
+                if type(orig) ~= 'table' then return orig end
+                local t = {}
+                for k,v in pairs(orig) do
+                    t[k] = ( type(v) == 'table' ) and weak_clone(v) or v
+                end
+                return t
+            end
+            local function get_size(t) -- making sure we get non-number index
+                local n = 0
+                for _ in pairs(t) do n=n+1 end
+                return n
+            end
+            local function unpack_args(arg)
+                if table.getn(arg)==1 and type(arg[1])=='table' then return unpack(arg) end
+                return arg
+            end
+
+            local require_cache = {}
+
+            local function load(name, error_handle)
+                local file = sub(name,-4) ==' .lua' and lower(name) or ( lower(name) .. '.lua' ) -- you can now accidentally type '.lua' at the end and it wont die
+                local log={}
+                for w in gfind(hit .. add,'[^,]+') do
+                    local path = gsub(w .. folder .. file, '/+', '/')
+                    local func, err = loadfile( sanitize_path(path) ) -- enables to go up folders using '..'
+                    if func then
+                        hit = w .. ','; return func
+                    end
+                    log[getn(log)+1] = '[Error] ' .. err
+                end
+
+                error_handle.error = true
+                if error_handle.hide_errors then return function() end end
+                if not error_handle.allow_error then GOT_LUA_ERROR = true end
+
+                for i=1, getn(log) do
+                    if not find(log[i], 'cannot read') then
+                        print( log[i] ); return
+                    end
+                end
+                print( log[1] )
+            end
+
+            function stitch:__call(...)
+                local args = unpack_args( arg )
+
+                local file_name = lower( args[1] )
+                if not args.recache and require_cache[ file_name ] then -- allow recaching
+                    return unpack( require_cache[file_name] )
+                end
+
+                local error_handle = {
+                    hide_errors = args.hide_errors,
+                    allow_error = args.allow_error,
+                    error = false,
+                }
+                local func = load( file_name, error_handle )
+                if error_handle.error and args.on_error then args.on_error() end
+                if not func then return end
+
+                local env = args.no_env and {} or (args[2] or args.env or melody)
+
+                -- cache call args because we're modifying the env variable
+                local call_args = args[3] or args.arg or {}
+                local temp_args = weak_clone( call_args )
+                env.arg = call_args
+
+                if not getmetatable(env) then
+                    setmetatable( env, { __index = melody, __newindex = melody } )
+                end
+
+                setfenv( func, env )
+                
+                local result = { pcall(func) }
+                args.on_error = args.on_error or print
+                if result[1] == false and args.on_error then args.on_error(result[2]); return end
+                table.remove( result, 1 ) -- remove result
+                if args.on_success then args.on_success( result ) end
+                if get_size( result ) > 0 then -- function returned variables, cache it and return result
+                    require_cache[ file_name ] = result
+                    return unpack( require_cache[ file_name ] )
+                end
+            end
+
+            setmetatable(stitch, stitch)
+
+        end
+
+        print('[!] Setting up template...')
+        lua_external('template/init')
+
+        print('[!] Loading addons...')
+        addons.loader.load_addons()
+
+        print('[!] Doing checks...')
+        check()
+
+    end"
+><children>
+    <Layer File="addon_loader.xml" Condition="not melody_invalid"/>
+
+    <!-- Delta time -->
+    <Layer Type="Quad" Condition="not GlobalClock" InitCommand="%melody(function(self)
+        if not GlobalClock then GlobalClock = self; self:effectperiod(1000000) end
+    end)"/>
+
+    <!-- Song timer -->
+    <BitmapText
+        Font="Common Normal"
+        Text="test" Condition="not melody.version_minimum('V2')"
+        OnCommand="%melody(function(self)
+            
+            self:x( SCREEN_CENTER_X )
+            self:y( SCREEN_CENTER_Y )
+            self:effectclock( 'music' ) 
+            self:playcommand( 'SetTime' )
+            self:hidden( 1 )
+
+        end)"
+        SetTimeCommand="%melody(function(self)
+            self:settext(self:GetSecsIntoEffect());
+            song_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') + tonumber( self:GetText() )
+            self:sleep(0.02); self:queuecommand('SetTime');
+        end)"
+    />
+</children></ActorFrame>

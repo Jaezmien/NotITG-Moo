@@ -1,0 +1,83 @@
+<ActorFrame><children>
+
+    <Layer
+        Type="Quad"
+        InitCommand="%melody(function(self)
+            if self:getaux()==1 then return end self:aux(1)
+
+            function am_bl(mult) return (60 / GAMESTATE:GetCurBPM()) * (mult or 1) end
+
+            init_hooks{
+                'mods init',
+                function()
+
+                    lua_external{ 'fg/mods', env = modreader.exschwasion }
+
+                end
+            }
+
+        end)"
+
+        OnCommand="queuecommand,Setup;zoom,0"
+        SetupCommand="%melody.setup"
+    />
+    
+    <Layer Type="ActorFrame" OnCommand="%melody(function(self) fg=self; end)"><children>
+
+        <!-- Foreground actors here -->
+
+    </children></Layer>
+
+    <Layer
+        Type="ActorFrame"
+        Condition="melody.config.minimum_build ~= 'OpenITG'"
+        Name="Judgments"
+    ><children>
+
+        <ActorProxy Condition="GAMESTATE:IsPlayerEnabled(0)"
+            Name="P1 Judgment"
+            InitializeProxiesMessageCommand="%melody(function(self)
+                proxy.create_proxy( self, jud1, 'P1 Judgment' )
+                self:zoom( 0.7 )
+                self:xy( mod_plr_origin[1][1] , mod_plr_origin[1][2] )
+                jud1:hidden(1)
+                jud1:sleep(9E9)
+            end)"
+        />
+        <ActorProxy Condition="GAMESTATE:IsPlayerEnabled(0)"
+            Name="P1 Combo"
+            InitializeProxiesMessageCommand="%melody(function(self)
+                proxy.create_proxy( self, com1, 'P1 Combo' )
+                self:zoom( 0.7 )
+                self:xy( mod_plr_origin[1][1] , mod_plr_origin[1][2] )
+                com1:hidden(1)
+                com1:sleep(9E9)
+            end)"
+        />
+
+        <ActorProxy Condition="GAMESTATE:IsPlayerEnabled(1) or GAMESTATE:IsEditMode()"
+            Name="P2 Judgment"
+            InitializeProxiesMessageCommand="%melody(function(self)
+                proxy.create_proxy( self, jud2, 'P2 Judgment' )
+                self:zoom( 0.7 )
+                self:xy( mod_plr_origin[2][1] , mod_plr_origin[2][2] )
+                jud2:hidden(1)
+                jud2:sleep(9E9)
+            end)"
+        />
+        <ActorProxy Condition="GAMESTATE:IsPlayerEnabled(1) or GAMESTATE:IsEditMode()"
+            Name="P2 Combo"
+            InitializeProxiesMessageCommand="%melody(function(self)
+                proxy.create_proxy( self, com2, 'P2 Combo' )
+                self:zoom( 0.7 )
+                self:xy( mod_plr_origin[2][1] , mod_plr_origin[2][2] )
+                com2:hidden(1)
+                com2:sleep(9E9)
+            end)"
+        />
+
+    </children></Layer>
+
+</children></ActorFrame>
+
+</children></ActorFrame>

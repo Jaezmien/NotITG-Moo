@@ -1,0 +1,105 @@
+<Layer
+    Type="Quad" OnCommand="diffusealpha,0"
+    InitCommand="%melody(function(self)
+        if self:getaux()==1 then return end; self:aux(1); -- initcommand bs
+        
+        if version_minimum('V4') then -- Only activates if the file is made for V4 and future builds.
+
+            screen = self
+
+            screen:diffuse(0,0,0,0) -- whee
+
+            screen:xyz(0,0,0)
+            screen:zoomx(1)
+            screen:zoomy(1)
+            screen:rotationz(0)
+
+            local condor = {}
+            condor.const1 = math.sqrt(math.pow(SCREEN_WIDTH / 2, 2) + math.pow(SCREEN_HEIGHT / 2, 2))
+            condor.const2 = 180 + math.deg(math.atan(SCREEN_HEIGHT / SCREEN_WIDTH))
+
+            if version_minimum('V4.0.1') then -- GetEffect fixed
+
+                update_hooks['screen'] = function()
+
+                    local zx = screen:GetCurrentZoomX()
+                    local zy = screen:GetCurrentZoomY()
+                    local zr,zg,zb,za = screen:getdiffuse()
+
+                    --
+
+                    local ts = SCREENMAN:GetTopScreen()
+                    ts:rotationz(screen:GetEffectRotationZ())
+                    ts:zoomx(zx)
+                    ts:zoomy(zy)
+                    ts:x(SCREEN_CENTER_X + screen:GetEffectX() + zr + (condor.const1 * zx *
+                            math.cos((screen:GetEffectRotationZ() + condor.const2) / 180 * math.pi)))
+                    ts:y(SCREEN_CENTER_Y + screen:GetEffectY() + zg + (condor.const1 * zy *
+                            math.sin((screen:GetEffectRotationZ() + condor.const2) / 180 * math.pi)))
+                    ts:z( screen:GetEffectZ() + zb )
+
+                end
+
+            else
+
+                update_hooks['screen'] = function()
+
+                    local zx = screen:GetCurrentZoomX()
+                    local zy = screen:GetCurrentZoomY()
+
+                    local zr,zg,zb,za = screen:getdiffuse()
+
+                    --
+
+                    local ts = SCREENMAN:GetTopScreen()
+                    ts:rotationz(screen:GetEffectRotationZ())
+                    ts:zoomx(zx)
+                    ts:zoomy(zy)
+                    ts:x(SCREEN_CENTER_X + screen:GetEffectX() + zr + (condor.const1 * zx *
+                            math.cos((screen:GetEffectRotationZ() + condor.const2) / 180 * math.pi)))
+                    ts:y(SCREEN_CENTER_Y + screen:GetEffectZ() + zg + (condor.const1 * zy *
+                            math.sin((screen:GetEffectRotationZ() + condor.const2) / 180 * math.pi)))
+                    ts:z( screen:GetEffectY() + zb )
+
+                end
+
+            end
+
+        else
+
+            screen = {}
+
+            screen.x = 0
+            screen.y = 0
+            screen.z = 0
+            screen.rotation = 0
+            screen.zoom = 1
+            screen.zoomx = 1
+            screen.zoomy = 1
+
+            local condor = {}
+            condor.const1 = math.sqrt(math.pow(SCREEN_WIDTH / 2, 2) + math.pow(SCREEN_HEIGHT / 2, 2))
+            condor.const2 = 180 + math.deg(math.atan(SCREEN_HEIGHT / SCREEN_WIDTH))
+
+            update_hooks['screen'] = function()
+
+                local zx = screen.zoomx * screen.zoom
+                local zy = screen.zoomy * screen.zoom
+                --
+                local ts = SCREENMAN:GetTopScreen()
+                ts:rotationz(screen.rotation)
+                ts:zoomx(zx)
+                ts:zoomy(zy)
+                ts:x(SCREEN_CENTER_X + screen.x + (condor.const1 * zx *
+                        math.cos((screen.rotation + condor.const2) / 180 * math.pi)))
+                ts:y(SCREEN_CENTER_Y + screen.y + (condor.const1 * zy *
+                        math.sin((screen.rotation + condor.const2) / 180 * math.pi)))
+                ts:z( screen.z )
+
+            end
+
+            self:hidden(1)
+
+        end
+    end)"
+/>
