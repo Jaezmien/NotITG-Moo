@@ -48,7 +48,6 @@ If you don't want an addon to run but still want it inside the folder, add an un
 <br>
 
 ## 📢 Hooks
----
 Currently, there are three main hooks in the template.
 - `setup_hooks` are for functions that needs to run as soon as the template loads.
 - `init_hooks` are for functions that needs to run after `setup_hooks`.

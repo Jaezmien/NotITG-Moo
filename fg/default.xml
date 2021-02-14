@@ -1,16 +1,11 @@
 <ActorFrame
     Condition="(function()
-        if _G.melody_init == nil and _G.melody_invalid then _G.melody_invalid = nil; _G.melody = nil end
-        if not _G.melody_init then _G.melody_init = 'fg' end
-        return true
+        if (melody_load and table.getn(melody_load)==2) or (not melody_load) then melody_load = {} end
+        table.insert(melody_load,'fg');
+        if melody_error then melody_error=nil; melody=nil; return false; end
+        return true;
     end)()" InitCommand="sleep,9E9"
 ><children>
-    <Layer Condition="_G.melody_init == 'fg'" File="../template/init.xml"/>
-    <Layer File="fg.xml" Condition="not melody_invalid"/>
-    <ZLayer Condition="(function()
-        if _G.melody_init == 'bg' then
-            _G.melody_init = nil
-            if _G.melody_invalid then _G.melody = nil end
-        end
-    end)()"/>
+    <Layer File="../template/init.xml" Condition="melody_load[1]=='fg'"/>
+    <Layer File="fg.xml" Condition="not melody_error"/>
 </children></ActorFrame>

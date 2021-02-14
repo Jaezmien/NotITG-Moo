@@ -19,7 +19,7 @@ init_modsp2 = '*-1 2.5x, *-1 overhead';
     
 -- format: { beat_start, beat_end, mod_string, len_or_end, player_number}
 mods = {
-    
+	-- { 0, 9e9, '*-1 100 beat', 'end' }
 }
 
 -- time based mods
@@ -29,21 +29,21 @@ mods2 = {
 }
 
 -- beat based ease mods and functions
--- format: { beat_start, beat_end, mod_start, mod_end, mod, ease, len_or_end, player_number, persist, ease_extra_1, ease_extra_2}
+-- format: { beat_start, beat_end, mod_start, mod_end, mod, len_or_end, ease, player_number, persist, ease_extra_1, ease_extra_2}
 mods_ease = {
-
+	
 }
 
 -- you can now write perframe stuff without having to scroll down!
 -- format: { beat_start, beat_end, function }
 mod_perframes = {
-
+	
 }
 
 --this is both a message broadcaster and a function runner
 --if you put {beat,'String'}, then 'String' is broadcast as a message on that beat
 --if you put {beat,function() somecode end}, then function() is run at that beat
--- format: { beat_start, function, persist }
+-- format: { beat_start, function/string, persist (optional) }
 mod_actions = {
-    
+
 }

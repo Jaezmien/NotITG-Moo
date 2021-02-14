@@ -27,12 +27,9 @@ local updates = {}
 local updates_clear = false
 
 for _, v in pairs(readers) do
-    local reader, fUpdate = lua_external('template/addons/modreaders/' .. v)
+    local reader, fUpdate = lua('template/addons/modreaders/' .. v)
     if reader then
-        local helper = lua_external {
-            'template/addons/modreaders/_modhelper ' .. v,
-            env = reader
-        }
+        local helper = lua { 'template/addons/modreaders/_modhelper ' .. v, env = reader }
         if type(helper) ~= 'table' then helper = {} end
 
         setmetatable(reader, {__index = melody, __newindex = melody})

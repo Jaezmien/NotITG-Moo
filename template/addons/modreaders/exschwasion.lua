@@ -13,7 +13,6 @@ reader.mod_perframes = {}
 reader.mod_actions = {}
 local curaction = 1
 
-local first_seen_beat = GAMESTATE:GetSongBeat()
 local setup = false
 local update = function()
     local beat = GAMESTATE:GetSongBeat()
@@ -25,9 +24,7 @@ local update = function()
     end
 
     local disable = false;
-
     if disable then return end
-    if beat <= first_seen_beat + 0.1 then return end -- performance coding!! --
 
     for pn=1,2 do
         -- mod_do( 'clearall', pn )
