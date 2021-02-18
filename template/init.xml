@@ -108,8 +108,6 @@
         print('[!]', 'Loading addons...')
         addons:load()
 
-        lua{'testing', args={'a','b',c='d'}}
-
     end"
 ><children>
 
