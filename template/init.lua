@@ -217,8 +217,9 @@ do
             end
         end
     
-        if config.misc_checks == false then
-            __error('Miscellaneous check returned invalid')
+        if config.misc_checks ~= true then
+            local add = type(config.misc_checks) == "string" and ": "..(config.misc_checks) or "";
+            __error('Miscellaneous check returned invalid' .. add)
             return
         end
 
@@ -367,7 +368,7 @@ do
         if config.custom_update and config.custom_update_type ~= false then
             self:addcommand('Update', function(self)
                 update()
-                self:sleep(1 / config.customUpdate)
+                self:sleep(1 / config.custom_update)
                 self:queuecommand('Update')
             end)
             self:queuecommand('Update')
