@@ -1,3 +1,3 @@
-<ActorFrame><children>
+<ActorFrame OnCommand="%melody(function(self) bg=self; end)"><children>
 
 </children></ActorFrame>
