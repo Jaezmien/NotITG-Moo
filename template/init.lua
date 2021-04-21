@@ -160,14 +160,6 @@ do
     last_beat = FUCK_EXE and (GAMESTATE:GetCurrentSong():GetBeatFromElapsedTime(GAMESTATE:GetCurrentSong():MusicLengthSeconds()) + last_beat_offset) or 999
 
     song_dir = GAMESTATE:GetCurrentSong():GetSongDir()
-    -- Patch bug failsafe
-    if version_minimum('V4') then
-        local grp = GAMESTATE:GetRealPath(GAMESTATE:GetCurrentSong():GetSongDir())
-        local patch = '/Patch/patch.zip'
-        if not grp or string.sub(grp, 1, string.len(patch)) == patch then
-            print('[@]', '<Warning>', 'Data/Patch detected, using :GetSongDir() instead.')
-        else song_dir = grp; end
-    end
 end
 
 --+ Functions +--
