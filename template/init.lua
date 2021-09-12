@@ -378,7 +378,7 @@ do
 
     delta_time = 0
     local accumulator = 0
-    local global_delta_time = os and os.clock() or GlobalClock:GetSecsIntoEffect()
+    local global_delta_time
     
     local first_seen_beat = GAMESTATE:GetSongBeat()
     update = function()
@@ -388,16 +388,17 @@ do
 
         --
 
+        if not global_delta_time then global_delta_time = os and os.clock() or GlobalClock:GetSecsIntoEffect() end
         local cur_delta_time = os and os.clock() or GlobalClock:GetSecsIntoEffect()
         local _delta_time = cur_delta_time - global_delta_time
         
         if config.custom_update_type then
             accumulator = accumulator + _delta_time
-            delta_time = config.custom_update_type    
-            if accumulator >= config.custom_update then
+            delta_time = 1/config.custom_update    
+            if accumulator >= 1/config.custom_update then
                 local res, err = pcall(update_hooks)
                 if not res then SystemMessage( err ); update = function() end end
-                accumulator = accumulator - config.custom_update
+                accumulator = accumulator - 1/config.custom_update
             end
         else
             delta_time = _delta_time
