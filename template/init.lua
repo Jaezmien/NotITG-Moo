@@ -357,7 +357,7 @@ do
         local o_res, o_err = pcall(init_hooks)
         if not o_res then SystemMessage(o_err); return end
     
-        if config.custom_update and config.custom_update_type ~= false then
+        if config.custom_update and config.custom_update_type == false then
             self:addcommand('Update', function(self)
                 update()
                 self:sleep(1 / config.custom_update)
