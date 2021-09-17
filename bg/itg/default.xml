@@ -12,5 +12,5 @@
 
     <Layer File="text"/>
 
-    <Layer Type="Quad" OnCommand="zoomto,melody.SCREEN_WIDTH,melody.SCREEN_HEIGHT;diffuse,0,0,0,0.2"/>
+    <Layer Type="Quad" OnCommand="zoomto,melody.SCREEN_WIDTH,melody.SCREEN_HEIGHT;diffuse,0,0,0,0.4"/>
 </children></ActorFrame>

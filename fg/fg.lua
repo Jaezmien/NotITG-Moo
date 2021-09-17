@@ -16,11 +16,11 @@ t[#t+1] = Def.Quad {
 
 -- Insert FG here
 do
-	local fg = Def.ActorFrame {}
+	melody.fg = Def.ActorFrame {}
 	--
-
+	
 	--
-	t[#t+1] = fg
+	t[#t+1] = melody.fg
 end
 
 t[#t+1] = Def.ActorFrame {
