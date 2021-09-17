@@ -99,7 +99,7 @@
 
         -- Load Template
         print('[!]', 'Setting up template...')
-        lua('template/init')
+        lua('template/main')
 
         print('[!]', 'Doing checks...')
         check() 
