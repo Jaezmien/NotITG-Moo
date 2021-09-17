@@ -372,6 +372,17 @@ do
 				end
 			end
 		end
+
+		-- Bug with V4 and V4.0.1
+        if FUCK_EXE and version_minimum('V4') then
+            if GAMESTATE:IsEditMode() then
+                for pn=1, 8 do
+					if _M['P'..pn] then
+						do_actor_cmd( _M['P'..pn], 'x2,0;y2,0;z2,0;zoomx2,1;zoomy2,1;zoomz2,1;rotationx2,0;rotationy2,0;rotationz2,0;skewx2,0;skewy2,0' )
+					end
+                end
+            end
+        end
 	
 		local i_res, i_err = pcall(setup_hooks)
 		if not i_res then SystemMessage(i_err); return end
