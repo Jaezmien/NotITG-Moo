@@ -1,5 +1,5 @@
 -- dont load if template fails
-if melody_error then melody_error = nil; return Def.ActorFrame{} end
+if melody_error or not melody then melody_error = nil; return Def.ActorFrame{} end
 
 local song_dir = GAMESTATE:GetCurrentSong():GetSongDir()
 

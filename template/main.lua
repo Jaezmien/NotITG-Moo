@@ -1,5 +1,10 @@
 --+ Miscellaneous +--
 do
+	local function is_actor(actor)
+		if OPENITG then return type(actor) == "userdata" end
+		return type(actor) == "table" and actor._Line and actor._Dir and actor._Source
+	end
+
 	-- Table
 	do
 		table = setmetatable({}, {__index = _G.table})
@@ -73,16 +78,16 @@ do
 			return math.sqrt(d * d)
 		end
 		math.dist2d = function(a, b)
-			local x = type(a) == 'userdata' and {a:GetX(), a:GetY()} or a
-			local y = type(b) == 'userdata' and {b:GetX(), b:GetY()} or b
+			local x = is_actor(a) and {a:GetX(), a:GetY()} or a
+			local y = is_actor(b) and {b:GetX(), b:GetY()} or b
 			local dx = y[1] - x[1]
 			local dy = y[2] - x[2]
 			return math.sqrt(dx * dx + dy * dy)
 		end
 		math.dist = math.dist2d -- shortcut
 		math.dist3d = function(a, b)
-			local x = type(a) == 'userdata' and {a:GetX(), a:GetY(), a:GetZ()} or a
-			local y = type(b) == 'userdata' and {b:GetX(), b:GetY(), a:GetZ()} or b
+			local x = is_actor(a) and {a:GetX(), a:GetY(), a:GetZ()} or a
+			local y = is_actor(b) and {b:GetX(), b:GetY(), a:GetZ()} or b
 			local dx = y[1] - x[1]
 			local dy = y[2] - x[2]
 			local dz = y[3] - x[3]
@@ -143,6 +148,12 @@ do
 
 end
 
+-- prevent outfox from reparsing
+local function do_actor_cmd( actor, cmdstr )
+	local t = 'cmd'
+	actor[t]( actor, cmdstr )
+end
+
 do
 	song_time = 0
 
@@ -151,7 +162,7 @@ do
 			if type(action) == 'function' then
 				for i, v in ipairs(s) do if v then arg[1](v, i) end end
 			elseif type(action) == 'string' and OPENITG then
-				for i, v in ipairs(s) do if v then arg:cmd(action) end end
+				for i, v in ipairs(s) do if v then do_actor_cmd(v,action) end end
 			end
 		end
 	})
@@ -244,12 +255,12 @@ do
 		end
 
         for _, v in ipairs(files) do
-			local cond = (OPENITG and string.sub(v, -4) == '.xml' or true) or string.sub(v, -4) == '.lua') 
+			local cond = (OPENITG and (string.sub(v, -4) == '.xml')) or (string.sub(v, -4) == '.lua')
             if cond and string.sub(v, 1, 1) ~= '_' then
 
 				local condition = true -- both compatible
-				if string.sub(str, -12, -5) == ".notitg" and not OPENITG then condition = false; -- notitg only
-				elseif string.sub(str, -12, -5) == ".outfox" and OPENITG then condition = false; -- outfox only
+				if string.sub(v, -12, -5) == ".notitg" and not OPENITG then condition = false; -- notitg only
+				elseif string.sub(v, -12, -5) == ".outfox" and OPENITG then condition = false; -- outfox only
 				end
 				
 				if condition then
@@ -273,8 +284,7 @@ do
         local count = self.index + 1
 
         local stop = false
-        while self[count] and string.sub(self[count], -4) == '.lua' do
-            if stop then break end
+        while (not stop) and (self[count] and string.sub(self[count], -4) == '.lua') do
             print('[@]', 'Loading Lua Addon >> ' .. self[count])
             lua{
                 'template/addons/' .. self[count],
@@ -354,7 +364,7 @@ do
 						_M['jud' .. pn]:zoom(0.7)
 						_M['com' .. pn]:zoom(0.7)
 					else
-						_M['P' .. pn]:GetChild('NoteField'):cmd('rotationx,0;rotationy,0;rotationz,0;zoomz,1;')
+						do_actor_cmd( _M['P' .. pn]:GetChild('NoteField'), 'rotationx,0;rotationy,0;rotationz,0;zoomz,1' )
 						for ex = pn + 2, 8, 2 do
 							_M['P' .. ex] = SCREENMAN:GetTopScreen():GetChild('PlayerP' .. ex)
 						end

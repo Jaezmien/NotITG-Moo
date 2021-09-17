@@ -2,24 +2,73 @@ modreader = {}
 
 --
 
-local activation_rate = FUCK_EXE and '*-1 ' or '*9999 '
-mod_do = function(mod, pn) GAMESTATE:ApplyGameCommand('mod,' .. string.gsub(mod, '(%*%-%d) ', activation_rate), pn) end
-if version_minimum('V2') then mod_do = function(mod, pn) GAMESTATE:ApplyModifiers(mod, pn) end end
+if OPENITG then
+	local activation_rate = FUCK_EXE and '*-1 ' or '*9999 '
+	mod_do = function(mod, pn) GAMESTATE:ApplyGameCommand('mod,' .. string.gsub(mod, '(%*%-%d) ', activation_rate), pn) end
+	if version_minimum('V2') then mod_do = function(mod, pn) GAMESTATE:ApplyModifiers(mod, pn) end end
+else
+	local poptions = {}
+	function mod_do(mod, pn)
+		if not pn then for pn=1,2 do mod_do(mod, pn) end; return; end
+        return poptions[pn]:FromString( string.gsub(mod, '(%*%-%d) ', '*9999 ') )
+	end
+	for pn=1,2 do
+		if GAMESTATE:IsPlayerEnabled(pn-1) then poptions[pn] = GAMESTATE:GetPlayerState(pn - 1):GetPlayerOptions('ModsLevel_Song') end
+	end
+end
 
 --
 
-local files;
+local files = {}
+local function get_helper(pure, req)
+	local helpers = {}
+	for i,v in ipairs( files ) do
+		if string.sub( v, 1, 1 ) == "_" then helpers[v]=v end
+	end
 
-if (config.minimum_build == 'OpenITG') or not FUCK_EXE then
-    files = config.default_reader or {'exschwasion'}
-else
-    files = { GAMESTATE:GetFileStructure(song_dir .. 'template/addons/modreaders/') }
+	-- first we check for an X.lua, that means it's compatible for both versions
+	-- otherwise, we need to grab the compatible file
+	return (helpers[ "_modhelper " .. pure .. ".lua" ]) or
+			(req and helpers[ "_modhelper " .. pure .. "." .. req .. ".lua" ]) or
+			(print("[Mod Reader]", "Could not find a compatible reader for " .. pure) and nil)
+end
+
+if OPENITG then
+	if (config.minimum_build == 'OpenITG') or not FUCK_EXE then
+		files = config.default_reader or {'exschwasion'}
+		if table.getn( files ) == 1 and string.sub(v, 1, 1) ~= "_" then table.insert( files, "_modhelper " .. files[1] ) end
+		for i,v in ipairs( files ) do
+			if string.sub(v, -4) ~= '.lua' then files[i] = v .. '.lua' end
+		end
+	else
+		files = { GAMESTATE:GetFileStructure(song_dir .. 'template/addons/modreaders/') }
+	end
+else -- outfox
+	files = FILEMAN:GetDirListing( song_dir .. "template/addons/modreaders/" )
 end
 
 local readers = {}
 for _, v in pairs(files) do
     if string.sub(v, -4) == '.lua' and string.sub(v, 1, 1) ~= '_' then
-        table.insert(readers, string.sub(v, 1, -5))
+
+		local condition = true -- both compatible
+		if string.sub(v, -11, -5) == ".notitg" and not FUCK_EXE then condition = false; end -- notitg only
+		if string.sub(v, -11, -5) == ".outfox" and OPENITG then condition = false; end -- outfox only
+        
+		if condition then
+			local name = string.sub(v, 1, -5)
+			local pure = nil
+			local cond = nil
+			if string.sub(name, -7) == ".notitg" or string.sub(name, -7) == ".outfox" then
+				pure = string.sub( name, 1, -8 )
+				cond = string.sub(name, -6)
+			end
+			table.insert(readers, {
+				name = name,
+				pure_name = pure,
+				condition = cond
+			})
+		end
     end -- Discard other files
 end
 
@@ -27,29 +76,37 @@ local updates = {}
 local updates_clear = false
 
 for _, v in pairs(readers) do
-    local reader, fUpdate = lua('template/addons/modreaders/' .. v)
+    local reader, fUpdate = lua('template/addons/modreaders/' .. v.name)
     if reader then
-        local helper = lua { 'template/addons/modreaders/_modhelper ' .. v, env = reader }
+        local helper = {}
+		do
+			local helper_filename = get_helper( v.pure_name, v.condition )
+			if helper_filename then
+				helper = lua{ 'template/addons/modreaders/' .. helper_filename, env = reader }
+			end
+		end
         if type(helper) ~= 'table' then helper = {} end
 
         setmetatable(reader, {__index = melody, __newindex = melody})
         setmetatable(helper, {__index = reader, __newindex = reader})
 
-        modreader[v] = helper
-        updates[v] = fUpdate.func
+		local reader_name = v.pure_name
+
+        modreader[reader_name] = helper
+        updates[reader_name] = fUpdate.func
         if fUpdate.clear == true then updates_clear = true
         elseif fUpdate.clear == false and updates_clear then
 
             if fUpdate.disable then
                 fUpdate.disable()
             else
-                modreader[v] = nil; updates[v] = nil
-                print('[Mod Reader]', 'A template requested `clearall` functionality, which breaks "'.. v ..'" reader. Ignoring...')
+                modreader[reader_name] = nil; updates[reader_name] = nil
+                print('[Mod Reader]', 'A template requested `clearall` functionality, which breaks "'.. reader_name ..'" reader. Ignoring...')
             end
 
         end
 
-        if modreader[v] then print('[Mod Reader]', 'Loaded ' .. v .. ' mod reader') end
+        if modreader[reader_name] then print('[Mod Reader]', 'Loaded ' .. reader_name .. ' mod reader') end
     end
 end
 

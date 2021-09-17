@@ -125,7 +125,7 @@ char_states = {
     -- + Special Characters (4)
 }
 
-ini = PROFILEMAN:GetMachineProfile():GetSaved()
+ini = OPENITG and PROFILEMAN:GetMachineProfile():GetSaved() or PROFILEMAN:GetMachineProfile():GetUserTable() -- TODO: check if getusertable is alternative
 
 --
 

@@ -3,8 +3,11 @@ local song_dir = GAMESTATE:GetCurrentSong():GetSongDir()
 
 do
 	melody = nil
-	loadfile(song_dir .. "template/init.lua")()
-	if melody_error then melody_error = nil; return Def.ActorFrame{} end
+	local res, err = pcall( loadfile(song_dir .. "template/init.lua") )
+	if melody_error or not res then
+		if err then print( err ) end
+		melody_error = nil; return Def.ActorFrame{}
+	end
 end
 
 local t = Def.ActorFrame {}
