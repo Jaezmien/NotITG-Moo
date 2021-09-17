@@ -192,7 +192,7 @@ end
 do
 	get_song_time = function()
 		if OPENITG then
-			return version_minimum('V2') and (function() return GAMESTATE:GetSongTime() end) or (function() return song_time end)
+			return version_minimum('V2') and (GAMESTATE:GetSongTime()) or (song_time)
 		end
 		return PREFSMAN:GetPreference('GlobalOffsetSeconds') + GAMESTATE:GetCurrentSong():GetCurMusicSeconds()
 	end
