@@ -1,6 +1,6 @@
 <Layer Type="ActorFrame" Condition="not melody_error"><children>
 
-    <Layer Condition="melody.addons:get()" File="@melody.addons:grab_xml()"/>
-    <Layer Condition="melody.addons.continue" File="addon_loader"/>
+	<Layer Condition="melody.addons:get()" File="@melody.addons:grab_xml()"/>
+	<Layer Condition="melody.addons.continue" File="addon_loader"/>
 
 </children></Layer>
