@@ -57,7 +57,7 @@ for _, v in pairs(files) do
         
 		if condition then
 			local name = string.sub(v, 1, -5)
-			local pure = nil
+			local pure = name
 			local cond = nil
 			if string.sub(name, -7) == ".notitg" or string.sub(name, -7) == ".outfox" then
 				pure = string.sub( name, 1, -8 )
