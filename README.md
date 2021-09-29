@@ -16,18 +16,12 @@ This acts like [XeroOl](https://github.com/XeroOl/notitg-mirin) and [KyDash](htt
 
 ## 🧰 Features
 - Loading `.lua` files
+- Addons!
 - The `modreader.lua` addon allows the modder to use any, or multiple, modreaders.
 - Compatible with all versions of NotITG, and supports OpenITG.<sup>[1](#compatibility)</sup>
 - Also supports Outfox as well!
 - Supports ditching the rhythm game and turning NotITG into a game engine.
 - probably some cows.
-
-<br>
-
-## ❓ Branch Info
-- `main` - The main branch
-- `extras` - Branch for addons
-- `engine` - Branch for base engine file
 
 <br>
 
@@ -38,7 +32,7 @@ While `simfile.txt` already has what you need for your `.sm` file, you will need
 
 You will also need to check out `settings.lua` to turn on some settings.
 
-For Outfox: You'll need to use `#BGCHANGES`.
+For Outfox, you'll need to use `#BGCHANGES`.
 
 <br>
 
