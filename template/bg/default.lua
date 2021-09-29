@@ -11,5 +11,9 @@ do
 end
 
 local t = Def.ActorFrame {}
+t[#t+1] = Def.Quad {
+	OnCommand=function(self) self:diffusealpha( 0 ):queuecommand('Setup') end,
+	SetupCommand=melody.setup
+}
 t[#t+1] = loadfile( song_dir .. "bg/bg.lua" )()
 return t

@@ -1,4 +1,5 @@
-local t = Def.ActorFrame {}
+melody.fg = Def.ActorFrame {}
+local t = melody.fg
 
 t[#t+1] = Def.Quad {
 	InitCommand=melody(function(self)
@@ -7,21 +8,10 @@ t[#t+1] = Def.Quad {
 		init_hooks{'mods init',function()
 			lua{'fg/mods', env=modreader.jaezmien}
 		end}
-	end),
-	OnCommand=function(self)
-		self:diffusealpha( 0 ):queuecommand('Setup')
-	end,
-	SetupCommand=melody.setup
+	end)
 }
 
--- Insert FG here
-do
-	melody.fg = Def.ActorFrame {}
-	--
-	
-	--
-	t[#t+1] = melody.fg
-end
+-- Foreground actors here --
 
 t[#t+1] = Def.ActorFrame {
 	Name="Judgments",

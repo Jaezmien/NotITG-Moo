@@ -67,15 +67,20 @@ do
 	setmetatable(lua,lua)
 end
 
+do
+	_print = function() end
+	if lua{'debug', ignore_error=true} == true then _print = function(...) print(...) end end
+end
+
 -- Load Template
-print('[!]', 'Setting up template...')
+_print('[!]', 'Setting up template...')
 lua('template/main')
 
-print('[!]', 'Doing checks...')
+_print('[!]', 'Doing checks...')
 check() 
 if melody_error then return end
 
-print('[!]', 'Loading addons...')
+_print('[!]', 'Loading addons...')
 addons:load()
 for _,addon in ipairs( addons ) do
 	t[#t+1] = addon

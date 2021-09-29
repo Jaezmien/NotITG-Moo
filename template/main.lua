@@ -8,96 +8,43 @@ do
 	-- Table
 	do
 		table = setmetatable({}, {__index = _G.table})
-		table.contains = function(t, val)
-			for _, v in pairs(t) do if v == val then return true end end
-			return false
+		table.contains = function(t, x) for _,v in pairs(t) do if v==x then return true end end return false end
+		table.shuffle = function(t) local l=table.getn(t); for i=l,2,-1 do local j =math.random(i, l); t[i],t[j]=t[j],t[i] end; return t end
+		table.clone = function(t)
+			local ot = type(t); if ot ~= 'table' then return t end
+			local copy = {}; for ok, ov in pairs(t) do copy[table.clone(ok)] = table.clone(ov) end
+			setmetatable(copy, table.clone(getmetatable(t))); return copy
 		end
-		table.shuffle = function(t)
-			for i=table.getn(t), 2, -1 do
-				local j = math.random(i, table.getn(t))
-				t[i], t[j] = t[j], t[i]
-			end
-			return t
+		table.weak_clone = function(t)
+			if type(t) ~= 'table' then return t end;
+			local _t = {}; for k,v in pairs(t) do _t[k] = (type(v) == 'table') and table.weak_clone(v) or v end; return _t
 		end
-		table.clone = function(orig)
-			local orig_type = type(orig)
-			local copy
-			if orig_type == 'table' then
-				copy = {}
-				for orig_key, orig_value in next, orig, nil do
-					copy[table.clone(orig_key)] = table.clone(orig_value)
-				end
-				setmetatable(copy, table.clone(getmetatable(orig)))
-			else -- number, string, boolean, etc
-				copy = orig
-			end
-			return copy
-		end
-		table.weak_clone = function(orig)
-			if type(orig) ~= 'table' then return orig end
-
-			local t = {}
-			for k,v in pairs(orig) do
-				t[k] = ( type(v) == 'table' ) and table.weak_clone(v) or v
-			end
-
-			return t
-		end
-		table.index_from_key = function(t, key)
-			for i, v in pairs(t) do if v == key then return i end end
-			return nil
-		end
-		table.to_array = function(t)
-			local a = {}
-			for _, v in pairs(t) do table.insert(a, v) end
-			return a
-		end
+		table.index_from_value = function(t, k) for i,v in pairs(t) do if v==k then return i end end return nil end
+		table.to_array = function(t) local a = {}; for _, v in pairs(t) do table.insert(a, v) end; return a end
 	end
 
 	-- Math
 	do
 		math = setmetatable({}, {__index = _G.math})
-		math.round = function(a, b)
-			local decim = math.pow(10, b or 0)
-			return (math.floor(a * decim + 0.5)) / decim
-		end
-		math.round2 = function(a, b)
-			return tonumber(string.format("%." .. (b or 0) .. "f", a))
-		end -- rounding but no add
+		math.round = function(a, b) b = math.pow(10, b or 0); return (math.floor(a * b + 0.5)) / b end
+		math.round2 = function(a, b) return tonumber(string.format("%.".. (b or 0) .."f", a)) end -- rounding but no add
 		math.mod = function(a, b) b=b or 1; return a - math.floor(a / b) * b; end
-		math.clamp = function(val, min, max) return math.max(min, math.min(max, val)); end
-		math.norm = function(val, old_min, old_max, new_min, new_max)
-			new_min = new_min or 0
-			new_max = new_max or 1
-			return (new_max - new_min) * ((val - old_min) / (old_max - old_min)) + new_min;
-		end
+		math.clamp = function(val, mn, mx) return math.max(mn, math.min(mx, val)); end
+		math.norm = function(val, _min, _max, min, max) min = min or 0; max = max or 1; return (max - min) * ((val - _min) / (_max - _min)) + min; end
 		math.dist1d = function(a, b)
-			local x = type(a) == 'table' and unpack(a) or a
-			local y = type(b) == 'table' and unpack(b) or b
-			local d = y - x
-			return math.sqrt(d * d)
+			local x,y = (type(a) == 'table' and unpack(a) or a), (type(b) == 'table' and unpack(b) or b)
+			local d = y-x; return math.sqrt(d * d)
 		end
 		math.dist2d = function(a, b)
-			local x = is_actor(a) and {a:GetX(), a:GetY()} or a
-			local y = is_actor(b) and {b:GetX(), b:GetY()} or b
-			local dx = y[1] - x[1]
-			local dy = y[2] - x[2]
-			return math.sqrt(dx * dx + dy * dy)
+			local x,y = (is_actor(a) and {a:GetX(), a:GetY()} or a), (is_actor(b) and {b:GetX(), b:GetY()} or b)
+			local dx,dy = (y[1]-x[1]), (y[2]-x[2]); return math.sqrt(dx * dx + dy * dy)
 		end
 		math.dist = math.dist2d -- shortcut
 		math.dist3d = function(a, b)
-			local x = is_actor(a) and {a:GetX(), a:GetY(), a:GetZ()} or a
-			local y = is_actor(b) and {b:GetX(), b:GetY(), a:GetZ()} or b
-			local dx = y[1] - x[1]
-			local dy = y[2] - x[2]
-			local dz = y[3] - x[3]
-			return math.sqrt(dx * dx + dy * dy + dz * dz)
+			local x,y = (is_actor(a) and {a:GetX(), a:GetY(), a:GetZ()} or a), (is_actor(b) and {b:GetX(), b:GetY(), a:GetZ()} or b) 
+			local dx,dy,dz = (y[1]-x[1]), (y[2]-x[2]), (y[3]-x[3]); return math.sqrt(dx * dx + dy * dy + dz * dz)
 		end
-		math.random_float = function(min, max)
-			if min==max then return min end
-			if min > max then min,max=max,min end
-			return math.random() * (max - min) + min
-		end
+		math.random_float = function(mn, mx) if mn==mx then return mn end if mn > mx then mn,mx=mx,mn end return math.random() * (mx - mn) + mn end
 	end
 end
 
@@ -121,8 +68,8 @@ do
 		misc_checks = true,
 	}
 
+	function version_minimum() return true end
 	if OPENITG then
-
 		nitg_versions = {
 			['V1']     = 20161226,
 			['V2']     = 20170405,
@@ -136,14 +83,9 @@ do
 			if config.minimum_build == 'OpenITG' then return (ver == 'OpenITG') end
 			return FUCK_EXE and (tonumber(GAMESTATE:GetVersionDate()) >= nitg_versions[ver])
 		end
-
-	else
-
-		function version_minimum() return true end
-
 	end
 
-	print('[@]', 'Loading custom settings...')
+	_print('[@]', 'Loading custom settings...')
 	lua('settings')
 
 end
@@ -160,9 +102,9 @@ do
 	mod_plr = setmetatable({}, {
 		__call = function(s, action)
 			if type(action) == 'function' then
-				for i, v in ipairs(s) do if v then arg[1](v, i) end end
+				for i,v in ipairs(s) do if v then action(v, i) end end
 			elseif type(action) == 'string' and OPENITG then
-				for i, v in ipairs(s) do if v then do_actor_cmd(v,action) end end
+				for _,v in ipairs(s) do if v then do_actor_cmd(v,action) end end
 			end
 		end
 	})
@@ -191,14 +133,16 @@ end
 
 do
 	get_song_time = function()
-		if OPENITG then
-			return version_minimum('V2') and (GAMESTATE:GetSongTime()) or (song_time)
-		end
-		return PREFSMAN:GetPreference('GlobalOffsetSeconds') + GAMESTATE:GetCurrentSong():GetCurMusicSeconds()
+		return (
+			OPENITG and (version_minimum('V2') and GAMESTATE:GetSongTime() or song_time)
+			or (PREFSMAN:GetPreference('GlobalOffsetSeconds') + GAMESTATE:GetCurrentSong():GetCurMusicSeconds())
+		)
 	end
 	get_os_time = function()
-		if OPENITG then return os and os.clock() or GlobalClock:GetSecsIntoEffect() end
-		return GetTimeSinceStart()
+		return (
+			OPENITG and (os and os.clock() or GlobalClock:GetSecsIntoEffect())
+			or GetTimeSinceStart()
+		)
 	end
 	
 	function check()
@@ -242,17 +186,15 @@ do
     addons = {}
     function addons:load()
 
-		local files = {}
-		if OPENITG then
-			if (config.minimum_build == 'OpenITG') or not FUCK_EXE then
-				for _,v in pairs(config.addons_files) do table.insert(self,v) end
-				return
-			end
-
-			files = { GAMESTATE:GetFileStructure(song_dir .. 'template/addons/') }
-		else
-			files = FILEMAN:GetDirListing( song_dir .. "template/addons/" )
+		if (config.minimum_build == 'OpenITG') or (not FUCK_EXE and OPENITG) then
+			for _,v in pairs(config.addons_files) do table.insert(self,v) end
+			return
 		end
+
+		local files = (
+			OPENITG and { GAMESTATE:GetFileStructure(song_dir .. 'template/addons/') }
+			or FILEMAN:GetDirListing( song_dir .. "template/addons/" )
+		)
 
         for _, v in ipairs(files) do
 			local cond = (OPENITG and (string.sub(v, -4) == '.xml')) or (string.sub(v, -4) == '.lua')
@@ -264,10 +206,9 @@ do
 				end
 				
 				if condition then
-					if OPENITG then
-						table.insert(self, v)
+					if OPENITG then table.insert(self, v)
 					else
-						print("[@]", "Loading Addon >> " .. v)
+						_print("[@]", "Loading Addon >> " .. v)
 						local addon = lua( "template/addons/" .. v )
 						if type(addon) == "table" then table.insert(self, addon) end
 					end
@@ -285,12 +226,12 @@ do
 
         local stop = false
         while (not stop) and (self[count] and string.sub(self[count], -4) == '.lua') do
-            print('[@]', 'Loading Lua Addon >> ' .. self[count])
+            _print('[@]', 'Loading Lua Addon >> ' .. self[count])
             lua{
                 'template/addons/' .. self[count],
                 error = function(err)
-                    print('[@]','<Error>','An error has occured while loading the addon')
-                    print('[@]', err)
+                    _print('[@]','<Error>','An error has occured while loading the addon')
+                    _print('[@]', err)
                     __error('An error has occured while loading an addon')
                     stop = true
                 end,
@@ -304,7 +245,7 @@ do
         return true
     end
     function addons:grab_xml()
-        print('[@]', 'Loading XML Addon >> ' .. self[self.index])
+        _print('[@]', 'Loading XML Addon >> ' .. self[self.index])
         return 'addons/' .. self[self.index]
     end
 end 
@@ -318,10 +259,7 @@ do
             {
                 __call = function(self, x, y)
 					local arg = (type(x) == 'table' and not y) and x or {x, y}
-                    if not arg or table.getn(arg)==0 then
-                        for _,v in pairs(self) do v() end;
-                        return
-                    end
+                    if not arg or table.getn(arg)==0 then for _,v in pairs(self) do v() end; return end
 
                     local name, func = arg[1], arg[2]
                     if type( name )~='string' or type( func )~='function' then return print('[@]', '<Error>', 'Invalid '.. t ..' hook, ignoring') end

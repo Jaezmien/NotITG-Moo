@@ -1,24 +1,15 @@
-<ActorFrame><children>
+<ActorFrame
+	InitCommand="%melody(function(self)
+		if self:getaux()==1 then return end self:aux(1)
+		function am_bl(mult) return (60 / GAMESTATE:GetCurBPM()) * (mult or 1) end
 
-	<Layer
-		Type="Quad"
-		InitCommand="%melody(function(self)
-			if self:getaux()==1 then return end self:aux(1)
-			function am_bl(mult) return (60 / GAMESTATE:GetCurBPM()) * (mult or 1) end
+		init_hooks{'mods init',function()
+			lua{'fg/mods', env=modreader.jaezmien}
+		end}
+	end)"
+><children>
 
-			init_hooks{'mods init',function()
-				lua{'fg/mods', env=modreader.jaezmien}
-			end}
-		end)"
-
-		OnCommand="diffusealpha,0;queuecommand,Setup" SetupCommand="%melody.setup"
-	/>
-	
-	<Layer Type="ActorFrame" OnCommand="%melody(function(self) fg=self; end)"><children>
-
-		<!-- Foreground actors here -->
-
-	</children></Layer>
+	<!-- Foreground actors here -->
 
 	<Layer
 		Type="ActorFrame"
