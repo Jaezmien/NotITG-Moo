@@ -112,7 +112,6 @@
 
 set_default_pn( 1, 2 ) -- change default player range
 set_default_layer( 1 ) -- change default layer
-init.xmod = 2
 
 -- Insert mods here! --
 -----------------------
