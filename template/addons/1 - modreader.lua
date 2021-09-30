@@ -37,7 +37,7 @@ end
 if OPENITG then
 	if (config.minimum_build == 'OpenITG') or not FUCK_EXE then
 		files = config.modreader._default or {'exschwasion'}
-		if table.getn( files ) == 1 and string.sub(v, 1, 1) ~= "_" then table.insert( files, "_modhelper " .. files[1] ) end
+		if table.getn( files ) == 1 and string.sub(files[1], 1, 1) ~= "_" then table.insert( files, "_modhelper " .. files[1] ) end
 		for i,v in ipairs( files ) do
 			if string.sub(v, -4) ~= '.lua' then files[i] = v .. '.lua' end
 		end
