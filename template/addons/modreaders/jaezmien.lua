@@ -154,8 +154,7 @@ setmetatable(
 		end,
 	}
 )
-reader.default
-{'zoomx', 100}{'zoomy', 100}{'zoomz', 100}
+reader.default{'zoomx', 100}{'zoomy', 100}{'zoomz', 100}
 
 reader.redirs = {}
 setmetatable(
@@ -180,11 +179,24 @@ setmetatable(
 		end,
 	}
 )
-reader.redirs
-{'reverse', function(v) return v==100 and 99.99 or v end}
+reader.redirs {'reverse', function(v) return v==100 and 99.99 or v end}
 {'xmod', function(v) return '*-1 '.. v ..'x' end}
 {'cmod', function(v) return '*-1 c'.. v end}
 {'dark', function(v) return 50 + (v / 100) * 50 end}
+if not FUCK_EXE then
+	reader.redirs{'rotationx', function(v,pn) mod_plr[pn]:rotationx( v ) end}
+	{'rotationy', function(v,pn) mod_plr[pn]:rotationy( v ) end}
+	{'rotationz', function(v,pn) mod_plr[pn]:rotationz( v ) end}
+end
+if not OPENITG then
+	reader.redirs{'attenuate', 'attenuatex'}
+	{'hideholds', 'stealthholds'}
+	{'modtimer', 'modtimersong'}
+	{'arrowpath', 'notepath'}
+	{'arrowpathdrawsize', 'notepathdrawsize'}
+	{'arrowpathdrawsizeback', 'notepathdrawsizeback'}
+	{'centered2', 'centeredpath'}
+end
 
 reader.ease = {}
 setmetatable(
@@ -487,7 +499,7 @@ local function update()
 					local modname = active_mods[ i ]
 					local modvalue = mod_table[ modname ]
 
-					local modstr = parse_mod( modname, modvalue )
+					local modstr = parse_mod( modname, modvalue, pn )
 
 					if modstr then table.insert( mod_builder, modstr ) end
 				end
