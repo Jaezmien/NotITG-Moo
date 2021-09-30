@@ -1,0 +1,14 @@
+<ActorFrame
+	Condition="(function()
+		if (melody_load and table.getn(melody_load)==2) or (not melody_load) then melody_load = {} end
+		table.insert(melody_load,'fg');
+		if melody_error then melody_error=nil; melody=nil; return false; end
+		return true;
+	end)()" InitCommand="sleep,9E9"
+><children>
+	<Layer File="../init.xml" Condition="melody_load[1]=='fg'"/>
+	<Layer Type="ActorFrame" Condition=" not melody_error"><children>
+		<Layer Type="Quad" OnCommand="diffusealpha,0;queuecommand,Setup" SetupCommand="%melody.setup" />
+		<Layer File="../../fg/fg.xml" OnCommand="%melody(function(self) fg=self; end)"/>
+	</children></Layer>
+</children></ActorFrame>

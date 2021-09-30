@@ -19,6 +19,7 @@ spellcards.clear = function()
 end
 --
 spellcards.push = function()
+	if not FUCK_EXE then return end
     if tonumber(GAMESTATE:GetVersionDate()) < 20170714  then return false end
 
     local s = GAMESTATE:GetCurrentSong()

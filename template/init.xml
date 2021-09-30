@@ -1,144 +1,149 @@
 <ActorFrame
-    InitCommand="%function(self)
+	InitCommand="%function(self)
 
-        -- Moo - Jaezmien's NotITG Template --
-        --------------------------------------
-        if self:getaux()==1 then return end self:aux(1)
+		-- Moo - Jaezmien's NotITG Template --
+		--------------------------------------
+		if self:getaux()==1 then return end self:aux(1)
 
-        -- Environment Setup
-        do
-            _G.melody = setmetatable({}, { __index = _G, __call = function(s,a) if a then setfenv(a,s); return a; end setfenv(2,s) end })
-            _G._M = _G.melody
-            melody()
-        end
-        
-        -- Miscellaneous
-        do
-            function SystemMessage(msg) SCREENMAN:SystemMessage( tostring(msg) ) end
-            function __error(msg) SystemMessage(msg); _G.melody_error = true end
-            function args_unpack(arg) return (table.getn(arg)==1 and type(arg[1])=='table') and unpack(arg) or arg end
-        end
+		-- Environment Setup
+		do
+			_G.melody = setmetatable({}, { __index = _G, __call = function(s,a) if a then setfenv(a,s); return a; end setfenv(2,s) end })
+			_G._M = _G.melody
+			melody()
+		end
+		
+		-- Miscellaneous
+		do
+			function SystemMessage(msg) SCREENMAN:SystemMessage( tostring(msg) ) end
+			function __error(msg) SystemMessage(msg); _G.melody_error = true end
+			function args_unpack(arg) return (table.getn(arg)==1 and type(arg[1])=='table') and unpack(arg) or arg end
+		end
 
-        -- Lua loader
-        do
-            local format, gsub, lower, gfind, find, sub = string.format, string.gsub, string.lower, string.gfind, string.find, string.sub
-            local getn, insert, concat, remove = table.getn, table.insert, table.concat, table.remove
+		-- Lua loader
+		do
+			local format, gsub, lower, gfind, find, sub = string.format, string.gsub, string.lower, string.gfind, string.find, string.sub
+			local getn, insert, concat, remove = table.getn, table.insert, table.concat, table.remove
 
-            local function split(str,sep)
-                local sep, fields, pattern = sep or ' ', {}, format('([^%s]+)', sep)
-                gsub(str, pattern, function(c) fields[getn(fields)+1] = c end)
-                return fields
-            end
-            local function sanitize(path)
-                local skip, new_str, split_path = 0, {}, split(path,'/')
-                for index=getn(split_path), 1, -1 do
-                    local str = split_path[ index ]
-                    if str == '..' then skip = skip + 1 else if skip > 0 then skip = skip - 1 else insert( new_str, 1, str ) end end
-                end
-                return gsub( concat( new_str, '/' ), '\\', '/')
-            end
-            local function clone(o) local t = {}; for k,v in pairs(o) do t[k] = type(v)=='table' and clone(v) or v; end return t end
-            local function size(t) local n = 0; for _ in pairs(t) do n=n+1; end return n end
+			local function split(str,sep)
+				local sep, fields, pattern = sep or ' ', {}, format('([^%s]+)', sep)
+				gsub(str, pattern, function(c) fields[getn(fields)+1] = c end)
+				return fields
+			end
+			local function sanitize(path)
+				local skip, new_str, split_path = 0, {}, split(path,'/')
+				for index=getn(split_path), 1, -1 do
+					local str = split_path[ index ]
+					if str == '..' then skip = skip + 1 else if skip > 0 then skip = skip - 1 else insert( new_str, 1, str ) end end
+				end
+				return gsub( concat( new_str, '/' ), '\\', '/')
+			end
+			local function clone(o) local t = {}; for k,v in pairs(o) do t[k] = type(v)=='table' and clone(v) or v; end return t end
+			local function size(t) local n = 0; for _ in pairs(t) do n=n+1; end return n end
 
-            local folder = gsub( lower(GAMESTATE:GetCurrentSong():GetSongDir()), '/songs', '')
-            local addSongs = lower(PREFSMAN:GetPreference('AdditionalSongFolders'))
-            local addFolder = gsub( lower(PREFSMAN:GetPreference('AdditionalFolders')), ',', '/songs,' )
-            local dir = './songs,' .. addSongs .. ',' .. addFolder .. '/songs'
+			local folder = gsub( lower(GAMESTATE:GetCurrentSong():GetSongDir()), '/songs', '')
+			local addSongs = lower(PREFSMAN:GetPreference('AdditionalSongFolders'))
+			local addFolder = gsub( lower(PREFSMAN:GetPreference('AdditionalFolders')), ',', '/songs,' )
+			local dir = './songs,' .. addSongs .. ',' .. addFolder .. '/songs'
 
-            lua = {}
-            lua.cache = {}
+			lua = {}
+			lua.cache = {}
 
-            lua.load = function(filename)
-                local err = ''
+			lua.load = function(filename)
+				local err = ''
 
-                for w in gfind(dir, '[^,]+') do
-                    local path = gsub(w..folder..filename, '/+', '/')
-                    local func, error = loadfile( sanitize(path) )
-                    if func then dir = w; return func end
+				for w in gfind(dir, '[^,]+') do
+					local path = gsub(w..folder..filename, '/+', '/')
+					local func, error = loadfile( sanitize(path) )
+					if func then dir = w; return func end
 
-                    if not find(error, 'cannot read') then return '[Error] '..error end
-                    err = error
-                end
+					if not find(error, 'cannot read') then return '[Error] '..error end
+					err = error
+				end
 
-                return '[Error] '..err
-            end
-            lua.__call = function(s, ...)
-                local args = args_unpack(arg)
-                local filename = lower( args[1] )
-                if sub(filename, -4)~='.lua' then filename=filename..'.lua' end
-                if lua.cache[filename] and args.cache~=false then return unpack(lua.cache[filename]) end
+				return '[Error] '..err
+			end
+			lua.__call = function(s, ...)
+				local args = args_unpack(arg)
+				local filename = lower( args[1] )
+				if sub(filename, -4)~='.lua' then filename=filename..'.lua' end
+				if lua.cache[filename] and args.cache~=false then return unpack(lua.cache[filename]) end
 
-                local func = lua.load(filename)
-                if type(func)=='string' then
-                    if args.ignore_error then return end
-                    if args.error then args.error(func) elseif args.show_error~=false then print(func) end
-                end
-                if type(func)~='function' then return end
+				local func = lua.load(filename)
+				if type(func)=='string' then
+					if args.ignore_error then return end
+					if args.error then args.error(func) elseif args.show_error~=false then print(func) end
+				end
+				if type(func)~='function' then return end
 
-                local env = args[2] or args.env or _G.melody
-                if not getmetatable(env) then setmetatable(env, {__index=melody, __newindex=melody}) end
-                
-                local args = args[3] or args.args or {}
-                env.__args = args
-                setfenv(func, env)
-                local result = { pcall(func) }
-                env.__args = nil
+				local env = args[2] or args.env or _G.melody
+				if not getmetatable(env) then setmetatable(env, {__index=melody, __newindex=melody}) end
+				
+				local args = args[3] or args.args or {}
+				env.__args = args
+				setfenv(func, env)
+				local result = { pcall(func) }
+				env.__args = nil
 
-                if result[1]==false then
-                    if args.ignore_error then return end
-                    if args.error then args.error(result[2]) elseif args.show_error~=false then print(result[2]) end
-                end
-                remove( result, 1 )
-                if size(result) > 0 then
-                    lua.cache[filename]=result; return unpack(result)
-                end
-            end
+				if result[1]==false then
+					if args.ignore_error then return end
+					if args.error then args.error(result[2]) elseif args.show_error~=false then print(result[2]) end
+				end
+				remove( result, 1 )
+				if size(result) > 0 then
+					lua.cache[filename]=result; return unpack(result)
+				end
+			end
 
-            setmetatable(lua,lua)
-        end
+			setmetatable(lua,lua)
+		end
 
-        -- Load Template
-        print('[!]', 'Setting up template...')
-        lua('template/init')
+		do
+			_print = function() end
+			if lua{'debug', ignore_error=true} == true then _print = function(...) print(unpack(arg)) end end
+		end
 
-        print('[!]', 'Doing checks...')
-        check() 
-        if melody_error then return end
-        
-        print('[!]', 'Loading addons...')
-        addons:load()
+		-- Load Template
+		_print('[!]', 'Setting up template...')
+		lua('template/main')
 
-    end"
+		_print('[!]', 'Doing checks...')
+		check() 
+		if melody_error then return end
+		
+		_print('[!]', 'Loading addons...')
+		addons:load()
+
+	end"
 ><children>
 
-    <Layer File="addon_loader"/>
-    <Layer Type="ActorFrame" Condition="not melody_error"><children>
+	<Layer File="addon_loader"/>
+	<Layer Type="ActorFrame" Condition="not melody_error"><children>
 
-        <!-- Delta time -->
-        <Layer Type="Quad" Condition="not GlobalClock" InitCommand="%melody(function(self)
-            if not GlobalClock then GlobalClock = self; self:effectperiod(1000000) end
-        end)"/>
+		<!-- Delta time -->
+		<Layer Type="Quad" Condition="not GlobalClock" InitCommand="%melody(function(self)
+			if not GlobalClock then GlobalClock = self; self:effectperiod(1000000) end
+		end)"/>
 
-        <!-- Song timer -->
-        <BitmapText
-            Font="Common Normal"
-            Text="test" Condition="not melody.version_minimum('V2')"
-            OnCommand="%melody(function(self)
+		<!-- Song timer -->
+		<BitmapText
+			Font="Common Normal"
+			Text="test" Condition="not melody.version_minimum('V2')"
+			OnCommand="%melody(function(self)
 
-                self:x( SCREEN_CENTER_X )
-                self:y( SCREEN_CENTER_Y )
-                self:effectclock( 'music' ) 
-                self:playcommand( 'SetTime' )
-                self:hidden( 1 )
+				self:x( SCREEN_CENTER_X )
+				self:y( SCREEN_CENTER_Y )
+				self:effectclock( 'music' ) 
+				self:playcommand( 'SetTime' )
+				self:hidden( 1 )
 
-            end)"
-            SetTimeCommand="%melody(function(self)
-                self:settext(self:GetSecsIntoEffect());
-                song_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') + tonumber( self:GetText() )
-                self:sleep(0.02); self:queuecommand('SetTime');
-            end)"
-        />
+			end)"
+			SetTimeCommand="%melody(function(self)
+				self:settext(self:GetSecsIntoEffect());
+				song_time = PREFSMAN:GetPreference('GlobalOffsetSeconds') + tonumber( self:GetText() )
+				self:sleep(0.02); self:queuecommand('SetTime');
+			end)"
+		/>
 
-    </children></Layer>
+	</children></Layer>
 
 </children></ActorFrame>
