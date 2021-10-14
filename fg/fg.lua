@@ -6,7 +6,7 @@ t[#t+1] = Def.Quad {
 		function am_bl(mult) return (GAMESTATE:GetCurBPS()) * (mult or 1) end
 
 		init_hooks{'mods init',function()
-			lua{'fg/mods', env=modreader.jaezmien}
+			-- lua{'fg/mods', env=modreader.jaezmien}
 		end}
 	end)
 }
