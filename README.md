@@ -20,7 +20,7 @@ This acts like [XeroOl](https://github.com/XeroOl/notitg-mirin) and [KyDash](htt
 - The `modreader.lua` addon allows the modder to use any, or multiple, modreaders.
 - Supports OpenITG<sup>[1](#compatibility)</sup>
 - Also supports Outfox as well!
-- Supports ditching the rhythm game and turning NotITG into a game engine.
+- Supports ditching the rhythm game and turning NotITG into a game engine<sup>[2](https://github.com/Jaezmien/NotITG-Moo-Engine)</sup>.
 - probably some cows.
 
 <br>
@@ -35,7 +35,7 @@ You will also need to check out `settings.lua` and turn on some settings.
 <br>
 
 ## 📦 Addons
-Addons are supported in this template, either in `.xml` or in `.lua` format.
+[Addons](https://github.com/Jaezmien/NotITG-Moo-Addons) are supported in this template, either in `.xml` or in `.lua` format.
 Templates for these are inside the `template/addons` folder.
 
 If you don't want an addon to run but still want it inside the folder, add an underscore prefix. (e.g. `_template.xml`)
