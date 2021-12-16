@@ -359,7 +359,7 @@ do
         
         if config.custom_update_type then
             accumulator = accumulator + _delta_time
-            delta_time = config.custom_update_type    
+            delta_time = config.custom_update 
             if accumulator >= config.custom_update then
                 local res, err = pcall(update_hooks)
                 if not res then SystemMessage( err ); update = function() end end
