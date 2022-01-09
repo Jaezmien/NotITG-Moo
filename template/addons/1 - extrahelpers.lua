@@ -1,129 +1,6 @@
-lerp = function(a, b, t) return a + (b - a) * t end
+function lerp(a, b, t) return a + (b - a) * t end
 function deg_to_rad(d) return d * math.pi / 1.8 end
-
-sound = function(str)
-    SOUND:PlayOnce(song_dir .. str .. '.ogg')
-end
-
-char_states = {
-    -- + Special Characters (1)
-        [' '] = 0,
-        ['space'] = 0,
-        ['!'] = 1,
-        ['&quot;'] = 2,
-        ['"'] = 2,
-        ['#'] = 3,
-        ['$'] = 4,
-        ['%'] = 5,
-        ['&'] = 6,
-        ['\''] = 7,
-        ['('] = 8,
-        [')'] = 9,
-        ['*'] = 10,
-        ['+'] = 11,
-        [','] = 12,
-        ['-'] = 13,
-        ['.'] = 14,
-        ['/'] = 15,
-    -- + Special Characters (1)
-
-    -- + Numbers
-        ['0'] = 16,
-        ['1'] = 17,
-        ['2'] = 18,
-        ['3'] = 19,
-        ['4'] = 20,
-        ['5'] = 21,
-        ['6'] = 22,
-        ['7'] = 23,
-        ['8'] = 24,
-        ['9'] = 25,
-    -- + Numbers
-
-    -- + Special Characters (2)
-        [':'] = 26,
-        [';'] = 27,
-        ['<'] = 28,
-        ['='] = 29,
-        ['>'] = 30,
-        ['?'] = 31,
-        ['@'] = 32,
-        -- + Special Characters (2)
-
-        -- + Uppercase Letters
-        ['A'] = 33,
-        ['B'] = 34,
-        ['C'] = 35,
-        ['D'] = 36,
-        ['E'] = 37,
-        ['F'] = 38,
-        ['G'] = 39,
-        ['H'] = 40,
-        ['I'] = 41,
-        ['J'] = 42,
-        ['K'] = 43,
-        ['L'] = 44,
-        ['M'] = 45,
-        ['N'] = 46,
-        ['O'] = 47,
-        ['P'] = 48,
-        ['Q'] = 49,
-        ['R'] = 50,
-        ['S'] = 51,
-        ['T'] = 52,
-        ['U'] = 53,
-        ['V'] = 54,
-        ['W'] = 55,
-        ['X'] = 56,
-        ['Y'] = 57,
-        ['Z'] = 58,
-    -- + Uppercase Letters
-
-    -- + Special Characters (3)
-        ['['] = 59,
-        ['\\'] = 60,
-        [']'] = 61,
-        ['^'] = 62,
-        ['_'] = 63,
-        ['`'] = 64,
-    -- + Special Characters (3)
-
-    -- + Lowercase Letters
-        ['a'] = 65,
-        ['b'] = 66,
-        ['c'] = 67,
-        ['d'] = 68,
-        ['e'] = 69,
-        ['f'] = 70,
-        ['g'] = 71,
-        ['h'] = 72,
-        ['i'] = 73,
-        ['j'] = 74,
-        ['k'] = 75,
-        ['l'] = 76,
-        ['m'] = 77,
-        ['n'] = 78,
-        ['o'] = 79,
-        ['p'] = 80,
-        ['q'] = 81,
-        ['r'] = 82,
-        ['s'] = 83,
-        ['t'] = 84,
-        ['u'] = 85,
-        ['v'] = 86,
-        ['w'] = 87,
-        ['x'] = 88,
-        ['y'] = 89,
-        ['z'] = 90,
-    -- + Lowercase Letters
-
-    -- + Special Characters (4)
-        ['{'] = 91,
-        ['|'] = 92,
-        ['}'] = 93,
-        ['~'] = 94
-    -- + Special Characters (4)
-}
+function sound(str) SOUND:PlayOnce(song_dir .. str .. '.ogg') end
 
 ini = OPENITG and PROFILEMAN:GetMachineProfile():GetSaved() or PROFILEMAN:GetMachineProfile():GetUserTable() -- TODO: check if getusertable is alternative
 
@@ -143,7 +20,6 @@ end
 function actor_block(actor)
     actor:x( 0 )
     actor:y( 0 )
-
     actor:stretchto( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT )
 end
 
