@@ -1,10 +1,10 @@
 --+ Miscellaneous +--
 do
-	local function is_actor(actor)
+	function is_actor(actor)
 		if OPENITG then return type(actor) == "userdata" end
 		return type(actor) == "table" and actor._Line and actor._Dir and actor._Source
 	end
-
+	
 	-- Table
 	do
 		table = setmetatable({}, {__index = _G.table})
@@ -92,10 +92,7 @@ do
 end
 
 -- prevent outfox from reparsing
-local function do_actor_cmd( actor, cmdstr )
-	local t = 'cmd'
-	actor[t]( actor, cmdstr )
-end
+local function do_actor_cmd( actor, cmdstr ) actor['c'..'md']( actor, cmdstr ) end
 
 do
 	song_time = 0
@@ -308,6 +305,8 @@ do
 							_M['P' .. ex] = SCREENMAN:GetTopScreen():GetChild('PlayerP' .. ex)
 						end
 					end
+				else
+					plr:rotafterzoom( false ):zoomz( SCREEN_WIDTH_MULT ):fardistz(1000*SCREEN_WIDTH_MULT)
 				end
 			end
 		end
@@ -359,7 +358,7 @@ do
         
         if config.custom_update_type then
             accumulator = accumulator + _delta_time
-            delta_time = config.custom_update 
+            delta_time = config.custom_update
             if accumulator >= config.custom_update then
                 local res, err = pcall(update_hooks)
                 if not res then SystemMessage( err ); update = function() end end

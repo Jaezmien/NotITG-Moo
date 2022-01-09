@@ -20,7 +20,7 @@
 		<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(0)"
 			Name="P1 Judgment"
 			InitializeProxiesMessageCommand="%melody(function(self)
-				proxy.create_proxy( self, jud1, 'P1 Judgment' )
+				proxy( self, jud1, 'P1 Judgment' )
 				self:zoom( 0.7 )
 				self:xy( mod_plr_origin[1][1] , mod_plr_origin[1][2] )
 				jud1:hidden(1)
@@ -30,7 +30,7 @@
 		<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(0)"
 			Name="P1 Combo"
 			InitializeProxiesMessageCommand="%melody(function(self)
-				proxy.create_proxy( self, com1, 'P1 Combo' )
+				proxy( self, com1, 'P1 Combo' )
 				self:zoom( 0.7 )
 				self:xy( mod_plr_origin[1][1] , mod_plr_origin[1][2] )
 				com1:hidden(1)
@@ -41,7 +41,7 @@
 		<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(1) or GAMESTATE:IsEditMode()"
 			Name="P2 Judgment"
 			InitializeProxiesMessageCommand="%melody(function(self)
-				proxy.create_proxy( self, jud2, 'P2 Judgment' )
+				proxy( self, jud2, 'P2 Judgment' )
 				self:zoom( 0.7 )
 				self:xy( mod_plr_origin[2][1] , mod_plr_origin[2][2] )
 				jud2:hidden(1)
@@ -51,7 +51,7 @@
 		<ActorProxy Condition="GAMESTATE:IsPlayerEnabled(1) or GAMESTATE:IsEditMode()"
 			Name="P2 Combo"
 			InitializeProxiesMessageCommand="%melody(function(self)
-				proxy.create_proxy( self, com2, 'P2 Combo' )
+				proxy( self, com2, 'P2 Combo' )
 				self:zoom( 0.7 )
 				self:xy( mod_plr_origin[2][1] , mod_plr_origin[2][2] )
 				com2:hidden(1)

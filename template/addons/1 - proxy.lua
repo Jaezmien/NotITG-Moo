@@ -1,16 +1,13 @@
-proxy = {}
-
 local proxies = {}
-
-proxy.create_proxy = function(actor,copy,id)
-    actor:SetTarget( copy )
-    proxies[id] = {
-        Proxy = actor,
-        Original = copy
-    }
-end
-proxy.remove_proxy = function(id)
-    proxies[id] = nil
-end
-proxy.get_proxy = function(id) return proxies[id].Proxy end
-proxy.get_original = function(id) return proxies[id].Original end
+proxy = setmetatable(
+	{
+		get_proxy = function(self, id) return proxies[id].Proxy end,
+		get_original = function(self, id) return proxies[id].Original end,
+	},
+	{
+	__index = function(self, key) return proxies[is_actor(key) and tostring(key) or key] end, __newindex = function() end,
+	__call = function(self, actor, target, id )
+		actor:SetTarget( target )
+		proxies[ id or tostring(actor) ] = { Proxy = actor, Original = target }
+	end,
+})
