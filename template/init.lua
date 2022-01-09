@@ -19,18 +19,26 @@ do
 	local format, gsub, lower, gfind, find, sub = string.format, string.gsub, string.lower, string.gfind, string.find, string.sub
 	local getn, insert, concat, remove = table.getn, table.insert, table.concat, table.remove
 
-	local function size(t)
-		local n = 0;
-		for _ in pairs(t) do n=n+1; end
-		return n
+	local function size(t) local n = 0; for _ in pairs(t) do n=n+1; end return n end
+	local function split(str,sep)
+		local sep, fields, pattern = sep or ' ', {}, format('([^%s]+)', sep)
+		gsub(str, pattern, function(c) fields[getn(fields)+1] = c end)
+		return fields
+	end
+	local function sanitize(path)
+		local skip, new_str, split_path = 0, {}, split(path,'/')
+		for index=getn(split_path), 1, -1 do
+			local str = split_path[ index ]
+			if str == '..' then skip = skip + 1 else if skip > 0 then skip = skip - 1 else insert( new_str, 1, str ) end end
+		end
+		return gsub( concat( new_str, '/' ), '\\', '/')
 	end
 
 	lua = {}
 	lua.cache = {}
 	lua.load = function(filename)
-		local func, error = loadfile( song_dir .. filename )
+		local func, error = loadfile( sanitize(song_dir .. filename) )
 		if func then dir = w; return func end
-
 		return func or ("[Error] " .. error)
 	end
 	lua._do_error = function( func, args )

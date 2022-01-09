@@ -24,6 +24,7 @@
 			local format, gsub, lower, gfind, find, sub = string.format, string.gsub, string.lower, string.gfind, string.find, string.sub
 			local getn, insert, concat, remove = table.getn, table.insert, table.concat, table.remove
 
+			local function size(t) local n = 0; for _ in pairs(t) do n=n+1; end return n end
 			local function split(str,sep)
 				local sep, fields, pattern = sep or ' ', {}, format('([^%s]+)', sep)
 				gsub(str, pattern, function(c) fields[getn(fields)+1] = c end)
@@ -37,9 +38,7 @@
 				end
 				return gsub( concat( new_str, '/' ), '\\', '/')
 			end
-			local function clone(o) local t = {}; for k,v in pairs(o) do t[k] = type(v)=='table' and clone(v) or v; end return t end
-			local function size(t) local n = 0; for _ in pairs(t) do n=n+1; end return n end
-
+			
 			local folder = gsub( lower(GAMESTATE:GetCurrentSong():GetSongDir()), '/songs', '')
 			local addSongs = lower(PREFSMAN:GetPreference('AdditionalSongFolders'))
 			local addFolder = gsub( lower(PREFSMAN:GetPreference('AdditionalFolders')), ',', '/songs,' )
