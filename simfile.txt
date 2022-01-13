@@ -1,7 +1,0 @@
-#BGCHANGES:;
-
-#BETTERBGCHANGES:0.000=template/bg=1.000=0=0=1=====,
-;
-
-#FGCHANGES:0.000=template/fg=1.000=0=0=1=====,
-;
