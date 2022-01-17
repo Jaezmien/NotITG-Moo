@@ -52,3 +52,12 @@ Currently, there are three main hooks in the template.
 - `update_hooks` are for functions that runs every template update.
 
 </center>
+
+## 🔨 Setting Up
+It's recommended to use [NotITG-Init](https://github.com/Jaezmien/NotITG-Init) to set up this template.
+
+Otherwise, you'll need to manually clone, or download, the repositories you'll use (including this one), and add them to your simfile folder.
+
+[🍺 Mods](https://github.com/Jaezmien/NotITG-Moo-Mods)
+[⚙ Engine](https://github.com/Jaezmien/NotITG-Moo-Engine)
+[📦 Addons](https://github.com/Jaezmien/NotITG-Moo-Addons)
