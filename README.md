@@ -1,63 +1,52 @@
-<center>
+<div align="center">
+  
+# NotITG-Moo
 
-# Moo
+<img src="https://img.shields.io/badge/Version-v2.2.0-green"> 
 
-🐄🔨🐄 bonk
+> A NotITG + Outfox File Framework
+  
+</div>
 
-<br>
-<br>
-
-## ⚠ Foreword
-This template is according to my prefence on working style.
-
-This acts like [XeroOl](https://github.com/XeroOl/notitg-mirin) and [KyDash](https://github.com/KyDash/nitg-template)'s template. Where, it mostly runs inside a pseudo environment.
-
-<br>
+## 📄 Acknowledgements
+This framework was originally based from mod templates such as [XeroOl's Mirin Template](https://github.com/XeroOl/notitg-mirin) and [KyDash's Template](https://github.com/KyDash/nitg-template).
 
 ## 🧰 Features
-- Loading `.lua` files
-- Addons!
-- The `modreader.lua` addon allows the modder to use any, or multiple, modreaders.
-- Supports OpenITG<sup>[1](#compatibility)</sup>
-- Also supports Outfox as well!
-- Supports ditching the rhythm game and turning NotITG into a game engine<sup>[2](https://github.com/Jaezmien/NotITG-Moo-Engine)</sup>.
-- probably some cows.
-
-<br>
-
-<h2 id="compatibility">🧓 Compatibility</h2>
-This template tries its best to be compatible with Outfox, and OpenITG.
-
-To have the file be compatible for all three, you'll need to change `#BETTERBGCHANGES` to `#BGCHANGES`.
-
-You will also need to check out `settings.lua` and turn on some settings.
-
-<br>
-
-## 📦 Addons
-[Addons](https://github.com/Jaezmien/NotITG-Moo-Addons) are supported in this template, either in `.xml` or in `.lua` format.
-Templates for these are inside the `template/addons` folder.
-
-If you don't want an addon to run but still want it inside the folder, add an underscore prefix. (e.g. `_template.xml`)
-
-If an addon can only be ran in either NotITG or Outfox. You'll need to add `.notitg` or `.outfox` before the file extension. (e.g. `addon.notitg.lua`, `addon.outfox.lua`)
-Otherwise, it can be left out and both versions will load the file. (e.g. `addon.lua`)
-
-<br>
-
-## 📢 Hooks
-Currently, there are three main hooks in the template.
-- `setup_hooks` are for functions that needs to run as soon as the template loads.
-- `init_hooks` are for functions that needs to run after `setup_hooks`.
-- `update_hooks` are for functions that runs every template update.
-
-</center>
+- Loading (and caching) `.lua` files
+- Lua and XML Addons
+- OpenITG + Outfox compatibility
+- Supports creating modfiles and minigames
 
 ## 🔨 Setting Up
-It's recommended to use [NotITG-Init](https://github.com/Jaezmien/NotITG-Init) to set up this template.
+It's recommended to use [NotITG-Init](https://github.com/Jaezmien/NotITG-Init) to easily set up the framework, and the template.
 
-Otherwise, you'll need to manually clone, or download, the repositories you'll use (including this one), and add them to your simfile folder.
+Alternatively, you can clone/download this repository, and the template you'll be using, and merge them to your simfile folder.
 
-[🍺 Mods](https://github.com/Jaezmien/NotITG-Moo-Mods)
-[⚙ Engine](https://github.com/Jaezmien/NotITG-Moo-Engine)
-[📦 Addons](https://github.com/Jaezmien/NotITG-Moo-Addons)
+- [↖ Modfile Template](https://github.com/Jaezmien/NotITG-Moo-Mods)
+- [⚙ Minigame Template](https://github.com/Jaezmien/NotITG-Moo-Engine)
+
+## 🤝 Compatibility
+This framework, and templates, tries its best to be compatible with Outfox and OpenITG.
+
+To have compatibility for any of these, you will need to use `#BGCHANGES` instead of `#BETTERBGCHANGES`.
+
+You will also need to check out `settings.lua`.
+
+## 🎣 Hooks
+To prevent load order confusion, it's recommended to put functions inside hooks.
+- `setup_hooks` - Functions that needs to run as soon as the framework loads *(recommended for addons)*.
+- `init_hooks` - Functions that needs to run after `setup_hooks`.
+- `update_hooks` - Functions that runs every update.
+
+Example:
+```lua
+init_hooks{'modfile initialize',function()
+	-- Guaranteed to exist when this function is ran.
+	local P1 = SCREENMAN:GetTopScreen():GetChild('PlayerP1')
+end}
+```
+
+<hr>
+
+## 🔗 Additional Links
+- [📦 Addons Repository](https://github.com/Jaezmien/NotITG-Moo-Addons)
