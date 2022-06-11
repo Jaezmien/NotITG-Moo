@@ -8,7 +8,6 @@ do
 	-- Table
 	do
 		table = setmetatable({}, {__index = _G.table})
-		table.contains = function(t, x) for _,v in pairs(t) do if v==x then return true end end return false end
 		table.shuffle = function(t) local l=table.getn(t); for i=l,2,-1 do local j =math.random(i, l); t[i],t[j]=t[j],t[i] end; return t end
 		table.clone = function(t)
 			local ot = type(t); if ot ~= 'table' then return t end
@@ -19,8 +18,6 @@ do
 			if type(t) ~= 'table' then return t end;
 			local _t = {}; for k,v in pairs(t) do _t[k] = (type(v) == 'table') and table.weak_clone(v) or v end; return _t
 		end
-		table.index_from_value = function(t, k) for i,v in pairs(t) do if v==k then return i end end return nil end
-		table.to_array = function(t) local a = {}; for _, v in pairs(t) do table.insert(a, v) end; return a end
 	end
 
 	-- Math
@@ -31,20 +28,6 @@ do
 		math.mod = function(a, b) b=b or 1; return a - math.floor(a / b) * b; end
 		math.clamp = function(val, mn, mx) return math.max(mn, math.min(mx, val)); end
 		math.norm = function(val, _min, _max, min, max) min = min or 0; max = max or 1; return (max - min) * ((val - _min) / (_max - _min)) + min; end
-		math.dist1d = function(a, b)
-			local x,y = (type(a) == 'table' and unpack(a) or a), (type(b) == 'table' and unpack(b) or b)
-			local d = y-x; return math.sqrt(d * d)
-		end
-		math.dist2d = function(a, b)
-			local x,y = (is_actor(a) and {a:GetX(), a:GetY()} or a), (is_actor(b) and {b:GetX(), b:GetY()} or b)
-			local dx,dy = (y[1]-x[1]), (y[2]-x[2]); return math.sqrt(dx * dx + dy * dy)
-		end
-		math.dist = math.dist2d -- shortcut
-		math.dist3d = function(a, b)
-			local x,y = (is_actor(a) and {a:GetX(), a:GetY(), a:GetZ()} or a), (is_actor(b) and {b:GetX(), b:GetY(), a:GetZ()} or b) 
-			local dx,dy,dz = (y[1]-x[1]), (y[2]-x[2]), (y[3]-x[3]); return math.sqrt(dx * dx + dy * dy + dz * dz)
-		end
-		math.random_float = function(mn, mx) if mn==mx then return mn end if mn > mx then mn,mx=mx,mn end return math.random() * (mx - mn) + mn end
 	end
 end
 
