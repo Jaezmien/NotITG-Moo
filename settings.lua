@@ -18,7 +18,7 @@
 -- config.allowed_resolutions = { 4/3, 16/9 }
 
 -- [?] Use a custom update rate instead of luaeffect
--- config.custom_update = 1/60
+-- config.custom_update = 60
 -- [?] (If above is enabled), use deltatime update instead of queuecommand
 -- config.custom_update_type = true
 
