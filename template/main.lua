@@ -38,7 +38,7 @@ do
 	config = {
 		-- ITG
 		addons_files = {},
-		minimum_build = 'V4.2',
+		minimum_build = 'V4.9.1',
 		allowed_resolutions = nil,
 		allow_d3d_renderer = false,
 		default_modreader = {},
@@ -61,6 +61,9 @@ do
 			['V4']     = 20200112,
 			['V4.0.1'] = 20200126,
 			['V4.2']    = 20210420,
+			['V4.3']    = 20220925,
+			['V4.9']    = 20240917,
+			['V4.9.1']    = 20241010,
 		}
 		
 		function version_minimum(ver)
