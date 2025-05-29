@@ -331,10 +331,14 @@ do
 
     delta_time = 0
     local accumulator = 0
-    local global_delta_time = get_os_time()
+    local global_delta_time = nil
     
     local first_seen_beat = GAMESTATE:GetSongBeat()
     update = function()
+		
+		if global_delta_time == nil then
+			global_delta_time = get_os_time()
+		end
 
         local beat = GAMESTATE:GetSongBeat()
         if beat <= first_seen_beat + 0.1 then return end
