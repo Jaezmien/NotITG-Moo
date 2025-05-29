@@ -118,11 +118,6 @@
 	<Layer File="addon_loader"/>
 	<Layer Type="ActorFrame" Condition="not melody_error"><children>
 
-		<!-- Delta time -->
-		<Layer Type="Quad" Condition="not GlobalClock" InitCommand="%melody(function(self)
-			if not GlobalClock then GlobalClock = self; self:effectperiod(1000000) end
-		end)"/>
-
 		<!-- Song timer -->
 		<BitmapText
 			Font="Common Normal"
