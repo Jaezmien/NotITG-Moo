@@ -123,8 +123,10 @@ do
 		)
 	end
 	get_os_time = function()
+		local gc = GlobalClock or melody_GlobalClock
+
 		return (
-			OPENITG and (os and os.clock() or GlobalClock:GetSecsIntoEffect())
+			OPENITG and (os and os.clock() or gc:GetSecsIntoEffect())
 			or GetTimeSinceStart()
 		)
 	end
